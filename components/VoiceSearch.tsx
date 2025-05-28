@@ -1,5 +1,7 @@
 "use client";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { FiMic } from "react-icons/fi";
 
 declare global {
   interface Window {
@@ -22,8 +24,8 @@ interface SpeechRecognitionEvent {
 }
 
 const VoiceSearch = () => {
-  const [query, setQuery] = useState("");
   const [listening, setListening] = useState(false);
+  const router = useRouter();
 
   const handleVoiceSearch = () => {
     const SpeechRecognition =
@@ -44,28 +46,48 @@ const VoiceSearch = () => {
     recognition.onend = () => setListening(false);
 
     recognition.onresult = (event: SpeechRecognitionEvent) => {
-      const voiceText = event.results[0][0].transcript;
-      setQuery(voiceText);
+      const voiceText = event.results[0][0].transcript.trim();
       console.log("Voice query:", voiceText);
+
+      // Find the main search input
+      const inputEl = document.querySelector(
+        'input[aria-controls="search-list"]'
+      ) as HTMLInputElement;
+
+      if (inputEl) {
+        // Simulate typing effect
+        let index = 0;
+        const typeInterval = setInterval(() => {
+          if (index <= voiceText.length) {
+            const partial = voiceText.slice(0, index);
+            inputEl.value = partial;
+            inputEl.dispatchEvent(new Event("input", { bubbles: true }));
+            index++;
+          } else {
+            clearInterval(typeInterval);
+            router.push(`/search?query=${encodeURIComponent(voiceText)}`);
+          }
+        }, 80);
+      } else {
+        router.push(`/search?query=${encodeURIComponent(voiceText)}`);
+      }
     };
 
     recognition.start();
   };
 
   return (
-    <div className="flex flex-col items-center gap-2">
+    <div className="absolute right-16 top-1/2 -translate-y-1/2">
       <button
         onClick={handleVoiceSearch}
-        className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-full shadow transition"
+        className="relative bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white p-3 rounded-full shadow-xl transition-transform transform hover:scale-110 focus:outline-none focus:ring-4 focus:ring-purple-300"
         aria-label="Voice search"
       >
-        {listening ? "🎤 Listening..." : "🎤 Tap to Speak"}
+        <FiMic size={15} />
+        {listening && (
+          <span className="absolute inset-0 rounded-full bg-white/30 animate-ping"></span>
+        )}
       </button>
-      {query && (
-        <p className="text-center text-gray-600 dark:text-gray-300">
-          You said: <strong>{query}</strong>
-        </p>
-      )}
     </div>
   );
 };

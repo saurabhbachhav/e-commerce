@@ -1,17 +1,23 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Fragment } from "react";
 import { useSearchParams } from "next/navigation";
+import { Dialog, Transition } from "@headlessui/react";
+import { useCart } from "@/context/CartContext";
 import Navbar from "@/components/Navbar";
+import Image from "next/image";
 
-
-type Product = {
-  id: number;
+// Extended product type with discount and gallery
+interface Product {
+  id: string;
   name: string;
   price: number;
   image: string;
+  gallery?: string[];
   category: string;
-};
+  description: string;
+  discount?: number;
+}
 
 const categories = ["All", "Electronics", "Fashion", "Books", "Home"];
 
@@ -23,16 +29,22 @@ export default function SearchResults() {
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 1000]);
+  const [darkMode, setDarkMode] = useState(false);
+
+  const [open, setOpen] = useState(false);
+  const [current, setCurrent] = useState<Product | null>(null);
+  const { addToCart } = useCart();
 
   useEffect(() => {
     const fetchResults = async () => {
       setLoading(true);
       try {
-        const response = await fetch(`/api/products?q=${query}`);
-        const data = await response.json();
-        setProducts(data.products || []);
-      } catch (error) {
-        console.error("Error fetching search results:", error);
+        const resp = await fetch(`/api/products?q=${query}`);
+        const data = await resp.json();
+        const prods = (data.products || []).map((p: any) => ({ ...p, gallery: p.gallery || [p.image] }));
+        setProducts(prods);
+      } catch {
+        console.error("Failed to fetch products");
       } finally {
         setLoading(false);
       }
@@ -42,137 +54,102 @@ export default function SearchResults() {
 
   useEffect(() => {
     let filtered = products;
-    if (selectedCategory !== "All") {
-      filtered = filtered.filter((p) => p.category === selectedCategory);
-    }
-    filtered = filtered.filter(
-      (p) => p.price >= priceRange[0] && p.price <= priceRange[1]
-    );
+    if (selectedCategory !== "All") filtered = filtered.filter((p) => p.category === selectedCategory);
+    filtered = filtered.filter((p) => p.price >= priceRange[0] && p.price <= priceRange[1]);
     setFilteredProducts(filtered);
   }, [products, selectedCategory, priceRange]);
 
+  const openQuick = (prod: Product) => {
+    setCurrent(prod);
+    setOpen(true);
+  };
+  const handleAdd = (prod: Product) => {
+    addToCart({ product: { _id: prod.id, name: prod.name, price: prod.price, image: prod.image, description: prod.description }, quantity: 1 });
+  };
+
   return (
-    <>
-    <Navbar/>
-      <div className="relative min-h-screen bg-white text-gray-800 overflow-hidden">
-        {/* Animated Background Circles */}
-        <div className="absolute top-[-100px] left-[-100px] w-[300px] h-[300px] bg-purple-300 rounded-full opacity-30 animate-pulse blur-3xl z-0"></div>
-        <div className="absolute bottom-[-100px] right-[-100px] w-[300px] h-[300px] bg-pink-300 rounded-full opacity-30 animate-ping blur-3xl z-0"></div>
-
-        <div className="relative z-10 container mx-auto px-6 py-12">
-          <h1 className="text-4xl sm:text-5xl font-bold text-center mb-12 text-transparent bg-clip-text bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500">
-            Search results for "{query}"
-          </h1>
-
-          <div className="flex flex-col lg:flex-row gap-10">
-            {/* Filters */}
-            <aside className="w-full lg:w-72 bg-gradient-to-b from-purple-100 to-pink-100 rounded-2xl shadow-lg p-6">
-              <h2 className="text-2xl font-semibold mb-6 text-purple-700 border-b border-purple-300 pb-3">
-                Filter
-              </h2>
-
-              {/* Category Filter */}
-              <div className="mb-6">
-                <label className="block mb-2 text-purple-700 font-medium">
-                  Category
-                </label>
-                <select
-                  value={selectedCategory}
-                  onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="w-full bg-white border border-purple-300 rounded-md p-3 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400"
-                >
-                  {categories.map((cat) => (
-                    <option key={cat} value={cat}>
-                      {cat}
-                    </option>
-                  ))}
-                </select>
+    <div className={darkMode ? "dark" : ""}>
+      {/* <Navbar darkMode={darkMode} setDarkMode={setDarkMode} /> */}
+      <div className="container mx-auto p-4">
+        <h1 className="text-3xl font-bold text-center mb-8">Search results for "{query}"</h1>
+        <div className="flex flex-col lg:flex-row gap-8">
+          <aside className="w-full lg:w-64 p-4 bg-white dark:bg-gray-800 rounded-lg shadow">
+            <h2 className="text-xl font-semibold mb-4">Filter</h2>
+            <div className="mb-4">
+              <label>Category</label>
+              <select value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value)} className="w-full border p-2 rounded">
+                {categories.map((c) => <option key={c} value={c}>{c}</option>)}
+              </select>
+            </div>
+            <div>
+              <label>Price: ₹{priceRange[0]} - ₹{priceRange[1]}</label>
+              <div className="flex gap-2">
+                <input type="number" value={priceRange[0]} onChange={(e) => setPriceRange([+e.target.value, priceRange[1]])} className="border p-1 rounded w-1/2" />
+                <input type="number" value={priceRange[1]} onChange={(e) => setPriceRange([priceRange[0], +e.target.value])} className="border p-1 rounded w-1/2" />
               </div>
+            </div>
+          </aside>
 
-              {/* Price Range */}
-              <div>
-                <label className="block mb-2 text-purple-700 font-medium">
-                  Price Range (${priceRange[0]} - ${priceRange[1]})
-                </label>
-                <div className="flex gap-4">
-                  <input
-                    type="number"
-                    value={priceRange[0]}
-                    onChange={(e) =>
-                      setPriceRange([+e.target.value, priceRange[1]])
-                    }
-                    className="w-1/2 bg-white border border-purple-300 rounded-md p-2"
-                  />
-                  <input
-                    type="number"
-                    value={priceRange[1]}
-                    onChange={(e) =>
-                      setPriceRange([priceRange[0], +e.target.value])
-                    }
-                    className="w-1/2 bg-white border border-purple-300 rounded-md p-2"
-                  />
-                </div>
-              </div>
-            </aside>
-
-            {/* Product Grid */}
-            <main className="flex-1 grid gap-8 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-              {loading ? (
-                <div className="col-span-full flex justify-center items-center gap-3">
-                  <div className="w-6 h-6 border-4 border-purple-500 border-t-transparent rounded-full animate-spin"></div>
-                  <span className="text-lg text-purple-500 font-medium">
-                    Loading...
-                  </span>
-                </div>
-              ) : filteredProducts.length > 0 ? (
-                filteredProducts.map((product) => (
-                  <div
-                    key={product.id}
-                    className="bg-white rounded-xl p-4 shadow-md hover:shadow-2xl border border-gray-100 transition-transform hover:scale-105 duration-300"
-                  >
-                    <div className="relative h-52 rounded-lg overflow-hidden mb-3">
-                      <img
-                        src={product.image}
-                        alt={product.name}
-                        className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
-                      />
-                      {/* Fake Quick View button */}
-                      <button className="absolute top-2 right-2 bg-white/80 text-sm text-purple-600 font-semibold px-2 py-1 rounded hover:bg-white">
-                        Quick View
-                      </button>
-                    </div>
-                    <div className="flex justify-between items-center mb-1">
-                      <h3 className="text-lg font-semibold truncate text-purple-700">
-                        {product.name}
-                      </h3>
-                      <span className="bg-pink-500 text-white px-3 py-1 text-xs font-bold rounded-full">
-                        ₹{product.price}
-                      </span>
-                    </div>
-                    <p className="text-xs text-gray-500 capitalize mb-3">
-                      {product.category}
-                    </p>
-
-                    {/* Fake e-commerce buttons */}
-                    <div className="flex justify-between gap-2">
-                      <button className="flex-1 bg-gradient-to-r from-blue-500 to-purple-500 text-white py-1 text-sm rounded-lg shadow hover:brightness-110 transition">
-                        Add to Cart
-                      </button>
-                      <button className="flex items-center justify-center bg-white text-pink-500 border border-pink-400 rounded-lg w-10 h-10 hover:bg-pink-100">
-                        ♥
-                      </button>
-                    </div>
+          <main className="flex-1 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {loading ? <p className="col-span-full text-center">Loading...</p> :
+              filteredProducts.length ? filteredProducts.map((prod) => (
+                <div key={prod.id} className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex flex-col">
+                  <div className="relative h-48">
+                    <Image src={prod.image} alt={prod.name} fill className="object-cover rounded" />
+                    {prod.discount && <span className="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded">{prod.discount}% Off</span>}
                   </div>
-                ))
-              ) : (
-                <p className="col-span-full text-center text-pink-500 text-lg font-semibold">
-                  No products found for "{query}".
-                </p>
-              )}
-            </main>
-          </div>
+                  <h3 className="mt-2 font-semibold truncate">{prod.name}</h3>
+                  <div className="flex items-center justify-between mt-1">
+                    <span className="font-bold">₹{(prod.price * (100 - (prod.discount || 0)) / 100).toFixed(0)}</span>
+                    {prod.discount && <span className="text-xs line-through text-gray-500">₹{prod.price}</span>}
+                  </div>
+                  <div className="mt-auto flex gap-2 pt-2">
+                    <button onClick={() => openQuick(prod)} className="flex-1 border p-2 rounded hover:bg-gray-100">Quick View</button>
+                    <button onClick={() => handleAdd(prod)} className="flex-1 bg-blue-600 text-white p-2 rounded hover:bg-blue-700">Add to Cart</button>
+                  </div>
+                </div>
+              )) : <p className="col-span-full text-center">No products found.</p>
+            }
+          </main>
         </div>
+
+        {current && (
+          <Transition show={open} as={Fragment}>
+            <Dialog onClose={setOpen} className="fixed inset-0 z-50">
+              {/* Backdrop */}
+              <Transition.Child as={Fragment} enter="ease-out duration-300" enterFrom="opacity-0" enterTo="opacity-100" leave="ease-in duration-200" leaveFrom="opacity-100" leaveTo="opacity-0">
+                <div className="fixed inset-0 bg-black/50" />
+              </Transition.Child>
+
+              <div className="fixed inset-0 flex items-center justify-center p-4">
+                <Transition.Child as={Fragment} enter="ease-out duration-300" enterFrom="opacity-0 scale-95" enterTo="opacity-100 scale-100" leave="ease-in duration-200" leaveFrom="opacity-100 scale-100" leaveTo="opacity-0 scale-95">
+                  <Dialog.Panel className="bg-white dark:bg-gray-800 rounded-lg overflow-hidden max-w-lg w-full">
+                    <div className="flex justify-end p-2">
+                      <button onClick={() => setOpen(false)} className="text-xl">&times;</button>
+                    </div>
+                    <div className="p-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        {(current.gallery ?? []).map((img, idx) => (
+                          <div key={idx} className="relative h-32">
+                            <Image src={img} alt={current.name} fill className="object-cover rounded" />
+                          </div>
+                        ))}
+                      </div>
+                      <Dialog.Title className="mt-4 text-xl font-bold">{current.name}</Dialog.Title>
+                      <Dialog.Description className="mt-2 text-gray-600 dark:text-gray-300">{current.description}</Dialog.Description>
+                      <div className="mt-4 flex items-center gap-4">
+                        <span className="text-2xl font-semibold">₹{(current.price * (100 - (current.discount || 0)) / 100).toFixed(0)}</span>
+                        {current.discount && <span className="line-through text-gray-500">₹{current.price}</span>}
+                      </div>
+                      <button onClick={() => handleAdd(current)} className="mt-4 w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700">Add to Cart</button>
+                    </div>
+                  </Dialog.Panel>
+                </Transition.Child>
+              </div>
+            </Dialog>
+          </Transition>
+        )}
       </div>
-    </>
+    </div>
   );
 }

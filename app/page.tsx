@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useEffect, useCallback, useState } from "react";
+import { useRef, useEffect, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import { useAuth } from "@/context/AuthContext";
 import Navbar from "@/components/Navbar";
@@ -10,22 +10,13 @@ import PopularProducts from "@/components/PopularProducts";
 import Testimonials from "@/components/Testimonials";
 import Footer from "@/components/Footer";
 import ProductGallery from "@/components/ProductGallery";
+import { useScroll } from "../context/ScrollContext";
 
 export default function HomePage() {
   const { data: session, status } = useSession();
-  const { login, user } = useAuth(); // get user from context
+  const { login, user } = useAuth();
   const galleryRef = useRef<HTMLDivElement>(null);
-
-  // Add state for dark mode
-  const [darkMode, setDarkMode] = useState(false);
-
-  useEffect(() => {
-    if (darkMode) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-  }, [darkMode]);
+  const { registerGalleryRef } = useScroll();
 
   // Memoize login to avoid unnecessary re-renders
   const stableLogin = useCallback(login, [login]);
@@ -47,22 +38,17 @@ export default function HomePage() {
     }
   }, [status, session, stableLogin, user]);
 
-  const handleScrollToGallery = () => {
-    galleryRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
-  // Pass dark mode toggle handler to Navbar
-  const toggleDarkMode = () => setDarkMode((prev) => !prev);
+  useEffect(() => {
+    registerGalleryRef(galleryRef as React.RefObject<HTMLElement>);
+  }, [registerGalleryRef]);
 
   return (
     <main>
-      <Navbar
-        onCategoryClick={handleScrollToGallery}
-        onToggleDarkMode={toggleDarkMode}
-        darkMode={darkMode}
-      />
+      {/* <Navbar onCategoryClick={handleCategoryClick} /> */}
       <Hero />
-      <ProductGallery ref={galleryRef} />
+      <div ref={galleryRef}>
+        <ProductGallery />
+      </div>
       <PopularProducts />
       <Features />
       <Testimonials />

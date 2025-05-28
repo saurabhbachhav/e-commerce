@@ -113,8 +113,9 @@ export const CartProvider = ({ children }: CartProviderProps) => {
   };
 
   const clearCart = async () => {
+  
     if (!user?.id) return;
-
+    console.log("cart is clearing ");
     setCart([]);
     try {
       await fetch("/api/cart", {

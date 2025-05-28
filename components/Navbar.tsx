@@ -4,6 +4,7 @@ import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
 import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
+import { useScroll } from "../context/ScrollContext";
 
 interface NavbarProps {
   onCategoryClick?: () => void;
@@ -19,6 +20,7 @@ const Navbar = ({
   const { data: session } = useSession();
   const { logout } = useAuth();
   const [isMenuOpen, setMenuOpen] = useState(false);
+  const { scrollToGallery } = useScroll();
 
   return (
     <header className="sticky top-0 z-50 bg-gray-50 shadow-md font-work-sans dark:bg-gray-900">
@@ -43,7 +45,7 @@ const Navbar = ({
           </li>
           <li>
             <button
-              onClick={onCategoryClick}
+             onClick={scrollToGallery}
               className="hover:text-blue-600 dark:hover:text-pink-400 transition"
             >
               Categories

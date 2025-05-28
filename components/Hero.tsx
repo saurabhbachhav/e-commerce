@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef, KeyboardEvent } from "react";
 import { useRouter } from "next/navigation";
 import { FiSearch, FiChevronRight } from "react-icons/fi";
 import { motion, useMotionValue, animate } from "framer-motion";
+import VoiceSearch from "./VoiceSearch";
 
 const rotatingWords = ["Savings", "Deals", "Shopping", "Confidence"];
 
@@ -82,6 +83,7 @@ export default function Hero() {
       try {
         const res = await fetch(`/api/products?q=${query}`);
         const data = await res.json();
+        console.log(data)
         setSuggestions(data.products || []);
         setHighlightedIndex(-1);
       } catch {
@@ -240,6 +242,7 @@ export default function Hero() {
             aria-expanded={isDropdownVisible}
             className="w-full rounded-full px-6 py-4 pr-14 text-gray-900 dark:text-gray-100 text-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 shadow-md hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-purple-400 focus:border-purple-600 transition duration-300 placeholder-gray-400 dark:placeholder-gray-500 focus:scale-[1.02]"
           />
+          <VoiceSearch/>
           <button
             type="submit"
             aria-label="Search"
