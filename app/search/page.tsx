@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect, Fragment } from "react";
-import { useSearchParams } from "next/navigation";
 import { Dialog, Transition } from "@headlessui/react";
 import { useCart } from "@/context/CartContext";
 import Image from "next/image";
@@ -21,8 +20,8 @@ interface Product {
 const categories = ["All", "Electronics", "Fashion", "Books", "Home"];
 
 export default function SearchResults() {
-  const searchParams = useSearchParams();
-  const query = searchParams?.get("query") || "";
+  // State for the query string
+  const [query, setQuery] = useState("");
   const [products, setProducts] = useState<Product[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -34,10 +33,23 @@ export default function SearchResults() {
   const [current, setCurrent] = useState<Product | null>(null);
   const { addToCart } = useCart();
 
+  // Extract query param manually on client side
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const q = params.get("query") || "";
+      setQuery(q);
+    }
+  }, []);
+
   useEffect(() => {
     const fetchResults = async () => {
       setLoading(true);
       try {
+        if (!query) {
+          setProducts([]);
+          return;
+        }
         const resp = await fetch(
           `/api/products?q=${encodeURIComponent(query)}`
         );
@@ -49,11 +61,12 @@ export default function SearchResults() {
         setProducts(prods);
       } catch (err) {
         console.error("Failed to fetch products", err);
+        setProducts([]);
       } finally {
         setLoading(false);
       }
     };
-    if (query) fetchResults();
+    fetchResults();
   }, [query]);
 
   useEffect(() => {
@@ -250,7 +263,7 @@ export default function SearchResults() {
                         <span className="text-2xl font-semibold">
                           ₹
                           {(
-                            (current.price * (100 - (current.discount || 0))) /
+                            (current.price * (100 - (current.discount ?? 0))) /
                             100
                           ).toFixed(0)}
                         </span>
@@ -261,8 +274,11 @@ export default function SearchResults() {
                         )}
                       </div>
                       <button
-                        onClick={() => handleAdd(current)}
-                        className="mt-4 w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700"
+                        onClick={() => {
+                          handleAdd(current);
+                          setOpen(false);
+                        }}
+                        className="mt-6 w-full bg-blue-600 text-white p-3 rounded hover:bg-blue-700"
                       >
                         Add to Cart
                       </button>
