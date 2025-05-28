@@ -4,8 +4,8 @@ import GoogleProvider from "next-auth/providers/google";
 import connection from "../../../../(backend)/db/database_connection/mongodb_collections";
 import User from "../../../../(backend)/db/models/user.model";
 
-
-await connection;
+// Don't await connection at top-level!
+// Instead, ensure connection is ready inside async functions.
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -21,7 +21,13 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, account, profile }) {
       if (account && profile) {
-        const userProfile = profile as { name: string; email: string; picture: string };
+        await connection; // Await here inside async function
+
+        const userProfile = profile as {
+          name: string;
+          email: string;
+          picture: string;
+        };
 
         try {
           let user = await User.findOne({ email: userProfile.email });
@@ -34,7 +40,7 @@ export const authOptions: NextAuthOptions = {
             });
           }
 
-          token.id = user._id.toString(); 
+          token.id = user._id.toString();
           token.name = userProfile.name;
           token.email = userProfile.email;
           token.picture = userProfile.picture;
