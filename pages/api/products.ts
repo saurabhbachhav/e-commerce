@@ -21,7 +21,7 @@ export default async function handler(
 ) {
   console.log("API route hit");
 
-  // 1) Ensure DB connection
+
   try {
     await connection;
   } catch (err) {
@@ -29,12 +29,12 @@ export default async function handler(
     return res.status(500).json({ error: "Database connection failed" });
   }
 
-  // 2) Parse pagination params
+
   const page = parseInt((req.query.page as string) || "1", 10);
   const limit = 12;
   const skip = (page - 1) * limit;
 
-  // 3) Build filter for optional search
+ 
   const q = (req.query.q as string) || "";
   const trimmed = q.trim();
   const filter = trimmed
@@ -46,16 +46,16 @@ export default async function handler(
       }
     : {};
 
-  // 4) Grab native Db instance
+ 
   const db = mongoose.connection.db;
 
   try {
-    // 5) Query with filter, pagination
+   
     const cursor = db!.collection<Product>("product").find(filter);
     const total = await cursor.count();
     const products = await cursor.skip(skip).limit(limit).toArray();
 
-    // 6) Return results (with optional meta)
+    
     return res.status(200).json({ products });
   } catch (err) {
     console.error("Query error:", err);

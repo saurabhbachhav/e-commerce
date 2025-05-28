@@ -88,7 +88,7 @@ export const CartProvider = ({ children }: CartProviderProps) => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           userId: user.id,
-          item: { product, quantity }, // ✅ Correct format
+          item: { product, quantity }, 
         }),
       });
     } catch (err) {
@@ -115,7 +115,6 @@ export const CartProvider = ({ children }: CartProviderProps) => {
   const clearCart = async () => {
   
     if (!user?.id) return;
-    console.log("cart is clearing ");
     setCart([]);
     try {
       await fetch("/api/cart", {

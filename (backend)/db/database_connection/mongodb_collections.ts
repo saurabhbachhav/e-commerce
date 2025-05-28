@@ -1,11 +1,8 @@
 import mongoose from "mongoose";
 
-// Get the URI and Database name from environment variables
 const uri = process.env.MONGODB_URI!;
 
-// Append the database name to the URI
-const fullUri =uri;
-// console.log(fullUri);
+const fullUri = uri;
 
 const connection = mongoose
   .connect(fullUri)

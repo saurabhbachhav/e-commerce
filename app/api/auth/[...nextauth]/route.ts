@@ -1,12 +1,10 @@
-// app/api/auth/[...nextauth]/route.ts
 import NextAuth, { NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 
-// Import MongoDB connection and User model
 import connection from "../../../../(backend)/db/database_connection/mongodb_collections";
 import User from "../../../../(backend)/db/models/user.model";
 
-// Ensure MongoDB connection
+
 await connection;
 
 export const authOptions: NextAuthOptions = {
@@ -26,7 +24,6 @@ export const authOptions: NextAuthOptions = {
         const userProfile = profile as { name: string; email: string; picture: string };
 
         try {
-          // Find or create the user in the database
           let user = await User.findOne({ email: userProfile.email });
           if (!user) {
             user = await User.create({
@@ -37,8 +34,7 @@ export const authOptions: NextAuthOptions = {
             });
           }
 
-          // Add the user's ID to the token
-          token.id = user._id.toString(); // Convert ObjectId to string
+          token.id = user._id.toString(); 
           token.name = userProfile.name;
           token.email = userProfile.email;
           token.picture = userProfile.picture;
@@ -49,7 +45,6 @@ export const authOptions: NextAuthOptions = {
       return token;
     },
     async session({ session, token }) {
-      // Attach user details, including the ID, to the session
       if (token) {
         session.user = {
           id: token.id as string,
@@ -65,5 +60,4 @@ export const authOptions: NextAuthOptions = {
 
 const handler = NextAuth(authOptions);
 
-// Next.js App Router requires named exports for HTTP methods
 export { handler as GET, handler as POST };

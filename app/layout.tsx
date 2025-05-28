@@ -1,10 +1,11 @@
-// app/layout.tsx
+
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import "easymde/dist/easymde.min.css";
 import Providers from "./providers";
-import ClientLayout from "./client-layout"; // <- NEW client layout component
+import ClientLayout from "./client-layout";
+
 
 const workSans = localFont({
   src: [

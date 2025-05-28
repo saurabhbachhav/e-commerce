@@ -10,7 +10,6 @@ export default function SuccessPage() {
   const { clearCart } = useCart();
 
   useEffect(() => {
-    // Clear cart on success page load
     clearCart;
   }, []);
 

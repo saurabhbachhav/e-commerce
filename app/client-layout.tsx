@@ -1,10 +1,10 @@
-// app/client-layout.tsx
+
 "use client";
 
 import { useEffect, useState } from "react";
 import Navbar from "@/components/Navbar";
 import { ScrollProvider } from "../context/ScrollContext";
-import { ThemeProvider } from "@/context/ThemeContext"; // <-- NEW
+import { ThemeProvider } from "@/context/ThemeContext"; 
 export default function ClientLayout({
   children,
 }: {

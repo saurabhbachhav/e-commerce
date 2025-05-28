@@ -1,5 +1,5 @@
-// context/AuthContext.tsx
-"use client"; // Ensure this runs only on client
+
+"use client"; 
 
 import React, {
   createContext,
@@ -34,7 +34,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Load user on mount from localStorage
+ 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
      

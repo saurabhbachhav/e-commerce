@@ -15,13 +15,13 @@ const userSchema = new Schema<IUser>({
   password: {
     type: String,
     required: function (this: IUser) {
-      return !this.isOAuth; // Password required only for non-OAuth users
+      return !this.isOAuth; 
     },
   },
   isOAuth: { type: Boolean, default: false },
 });
 
-// Ye check kar ke model banega ya existing model use hoga
+
 const User = models.User || model<IUser>("User", userSchema);
 
 export default User;

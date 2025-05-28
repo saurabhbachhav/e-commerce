@@ -3,7 +3,7 @@
 import { useRef, useEffect, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import { useAuth } from "@/context/AuthContext";
-import Navbar from "@/components/Navbar";
+
 import Hero from "@/components/Hero";
 import Features from "@/components/Features";
 import PopularProducts from "@/components/PopularProducts";
@@ -18,14 +18,14 @@ export default function HomePage() {
   const galleryRef = useRef<HTMLDivElement>(null);
   const { registerGalleryRef } = useScroll();
 
-  // Memoize login to avoid unnecessary re-renders
+  
   const stableLogin = useCallback(login, [login]);
 
   useEffect(() => {
     if (
       status === "authenticated" &&
       session?.user?.email &&
-      !user // check if already logged in
+      !user 
     ) {
       const userData = {
         id: (session.user as any)?.id || session.user.email,
@@ -44,7 +44,6 @@ export default function HomePage() {
 
   return (
     <main>
-      {/* <Navbar onCategoryClick={handleCategoryClick} /> */}
       <Hero />
       <div ref={galleryRef}>
         <ProductGallery />

@@ -29,7 +29,7 @@ export default function Hero() {
   const suggestionsRef = useRef<HTMLUListElement>(null);
   const [hasMounted, setHasMounted] = useState(false);
 
-  // motion values declared outside loop
+ 
   const x1 = useMotionValue(0);
   const y1 = useMotionValue(0);
   const scale1 = useMotionValue(1);

@@ -49,13 +49,13 @@ const VoiceSearch = () => {
       const voiceText = event.results[0][0].transcript.trim();
       console.log("Voice query:", voiceText);
 
-      // Find the main search input
+      
       const inputEl = document.querySelector(
         'input[aria-controls="search-list"]'
       ) as HTMLInputElement;
 
       if (inputEl) {
-        // Simulate typing effect
+    
         let index = 0;
         const typeInterval = setInterval(() => {
           if (index <= voiceText.length) {

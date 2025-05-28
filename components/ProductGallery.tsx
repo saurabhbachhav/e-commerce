@@ -17,12 +17,12 @@ interface Product {
 
 const tabVariant = {
   active: {
-    color: "#3B82F6", // blue-500 (light mode)
+    color: "#3B82F6", 
     scale: 1.15,
     borderBottom: "3px solid #3B82F6",
   },
   inactive: {
-    color: "#6B7280", // gray-500
+    color: "#6B7280", 
     scale: 1,
     borderBottom: "3px solid transparent",
   },
@@ -58,7 +58,7 @@ const ProductGallery = forwardRef<HTMLDivElement, {}>((_props, ref) => {
 
         const counts: Record<string, number> = {};
         cats.forEach((c) => {
-          counts[c] = 4; // initial visible items per category
+          counts[c] = 4; 
         });
         setVisibleCount(counts);
       } catch (error) {
@@ -87,7 +87,7 @@ const ProductGallery = forwardRef<HTMLDivElement, {}>((_props, ref) => {
       ref={ref}
       className="relative border-t border-blue-200 dark:border-blue-700 overflow-hidden py-20 px-8 bg-gradient-to-br from-[#E0ECFF] via-[#FBEFFF] to-[#FFE6EA] dark:from-gray-900 dark:via-gray-800 dark:to-gray-900"
     >
-      {/* Floating Gradient Circles */}
+    
       <motion.div
         className="absolute top-[-100px] left-1/3 w-[500px] h-[500px] bg-indigo-400 rounded-full mix-blend-multiply filter blur-[120px] opacity-30 -z-10"
         animate={{ x: [-50, 50], y: [0, -80] }}
@@ -109,7 +109,6 @@ const ProductGallery = forwardRef<HTMLDivElement, {}>((_props, ref) => {
         }}
       />
 
-      {/* Heading */}
       <motion.h1
         initial={{ opacity: 0, y: -30 }}
         animate={{ opacity: 1, y: 0 }}
@@ -119,7 +118,6 @@ const ProductGallery = forwardRef<HTMLDivElement, {}>((_props, ref) => {
         🛒 Explore Our Products
       </motion.h1>
 
-      {/* Category Tabs */}
       <motion.div
         className="flex justify-center gap-6 mb-10"
         initial="hidden"
@@ -143,8 +141,8 @@ const ProductGallery = forwardRef<HTMLDivElement, {}>((_props, ref) => {
             style={{
               color:
                 activeCat === cat
-                  ? "#3B82F6" /* blue-500 */
-                  : "#6B7280" /* gray-500 */,
+                  ? "#3B82F6"
+                  : "#6B7280" ,
               borderBottom:
                 activeCat === cat
                   ? "3px solid #3B82F6"
@@ -161,7 +159,7 @@ const ProductGallery = forwardRef<HTMLDivElement, {}>((_props, ref) => {
         ))}
       </motion.div>
 
-      {/* Products Grid */}
+    
       <AnimatePresence mode="wait">
         <motion.div
           key={activeCat}
@@ -189,7 +187,7 @@ const ProductGallery = forwardRef<HTMLDivElement, {}>((_props, ref) => {
                   className="object-cover group-hover:scale-105 transition-transform duration-500"
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
                 />
-                {/* Floating Tag */}
+              
                 <motion.div
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -238,7 +236,7 @@ const ProductGallery = forwardRef<HTMLDivElement, {}>((_props, ref) => {
         </motion.div>
       </AnimatePresence>
 
-      {/* View More Button */}
+     
       {visible < activeProducts.length && (
         <div className="flex justify-center mt-10">
           <motion.button

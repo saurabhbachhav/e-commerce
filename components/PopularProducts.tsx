@@ -9,8 +9,8 @@ interface Product {
   name: string;
   price: number;
   image: string;
-  description?: string; // new optional field for description
-  rating?: number; // new optional field for rating (0 to 5)
+  description?: string; 
+  rating?: number;
 }
 
 const cardVariant = {
@@ -33,7 +33,7 @@ const blobVariant = {
 };
 
 const StarRating: React.FC<{ rating: number }> = ({ rating }) => {
-  // rating from 0 to 5
+  
   return (
     <div className="flex justify-center mt-2">
       {[1, 2, 3, 4, 5].map((star) => (
@@ -77,7 +77,7 @@ const PopularProducts: React.FC = () => {
       if (!res.ok) throw new Error("Failed to fetch products");
       const data = await res.json();
       if (!Array.isArray(data.products)) throw new Error("Invalid data format");
-      // Assign dummy desc and rating if missing, for demo
+      
       const enriched = data.products.map((p: Product) => ({
         ...p,
         description: p.description || "Best quality product at great price.",

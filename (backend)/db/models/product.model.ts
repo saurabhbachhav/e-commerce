@@ -1,20 +1,19 @@
-// backend/db/models/product.model.ts
+
 
 import mongoose, { Schema, Document } from "mongoose";
 
-// 1. Interface for a Product document
 export interface ProductDocument extends Document {
   name: string;
   description: string;
   price: number;
-  image: string; // URL for the product image
+  image: string; 
   stock: number;
-  category?: string; // Optional field
+  category?: string; 
   createdAt: Date;
   updatedAt: Date;
 }
 
-// 2. Define the schema
+
 const ProductSchema = new Schema<ProductDocument>(
   {
     name: { type: String, required: true },
@@ -25,10 +24,9 @@ const ProductSchema = new Schema<ProductDocument>(
     category: { type: String },
   },
   {
-    timestamps: true, // adds createdAt and updatedAt fields automatically
+    timestamps: true, 
   }
 );
 
-// 3. Export model and explicitly use the 'product' collection name
 export default mongoose.models.Product ||
   mongoose.model<ProductDocument>("Product", ProductSchema, "product");

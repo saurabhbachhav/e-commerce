@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation"; // next/navigation for router in app dir
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { FaGoogle, FaFacebookF, FaInstagram } from "react-icons/fa";
 import Animation_Page from "../../../components/ui/Animation_Page";
@@ -38,24 +38,19 @@ const Login: React.FC = () => {
     if (res?.error) {
       setError("Invalid credentials");
     } else if (res?.ok) {
-      // Login success: Store user info (minimal) in localStorage
-      // Usually, user info comes from session, but if you want to store some
-      // minimal info here, you can do:
       localStorage.setItem("user", JSON.stringify({ email }));
 
-      // Redirect to homepage or dashboard
       router.push("/");
     }
   };
 
   const handleSocialLogin = (provider: string) => {
     if (provider === "google") {
-      signIn("google", { callbackUrl: "/" }); // redirect to home, where session will be synced
+      signIn("google", { callbackUrl: "/" });
     } else {
       alert("Only Google login is available for now.");
     }
   };
-  
 
   return (
     <div className="flex flex-col md:flex-row h-screen bg-gradient-to-r from-blue-50 via-white to-blue-100">

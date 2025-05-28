@@ -1,10 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import mongoose from "mongoose";
+
 import Cart from "../../../(backend)/db/models/cart.model";
 import Product from "../../../(backend)/db/models/product.model";
 import connection from "../../../(backend)/db/database_connection/mongodb_collections";
 
-// GET: Fetch cart for a user
 export async function GET(req: NextRequest) {
   try {
     await connection;
@@ -43,7 +42,7 @@ export async function GET(req: NextRequest) {
   }
 }
 
-// POST: Add or update item in cart
+
 export async function POST(req: NextRequest) {
   try {
     await connection;
@@ -90,7 +89,6 @@ export async function POST(req: NextRequest) {
   }
 }
 
-// PATCH: Remove a single product from cart
 export async function PATCH(req: NextRequest) {
   try {
     await connection;
@@ -125,7 +123,6 @@ export async function PATCH(req: NextRequest) {
   }
 }
 
-// DELETE: Clear entire cart for user
 export async function DELETE(req: NextRequest) {
   try {
     await connection;

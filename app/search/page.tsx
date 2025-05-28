@@ -4,10 +4,11 @@ import React, { useState, useEffect, Fragment } from "react";
 import { useSearchParams } from "next/navigation";
 import { Dialog, Transition } from "@headlessui/react";
 import { useCart } from "@/context/CartContext";
-import Navbar from "@/components/Navbar";
-import Image from "next/image";
 
-// Extended product type with discount and gallery
+import Image from "next/image";
+import { useTheme } from "@/context/ThemeContext";
+
+
 interface Product {
   id: string;
   name: string;
@@ -29,7 +30,7 @@ export default function SearchResults() {
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 1000]);
-  const [darkMode, setDarkMode] = useState(false);
+  const darkMode=useTheme();
 
   const [open, setOpen] = useState(false);
   const [current, setCurrent] = useState<Product | null>(null);
@@ -69,7 +70,7 @@ export default function SearchResults() {
 
   return (
     <div className={darkMode ? "dark" : ""}>
-      {/* <Navbar darkMode={darkMode} setDarkMode={setDarkMode} /> */}
+ 
       <div className="container mx-auto p-4">
         <h1 className="text-3xl font-bold text-center mb-8">Search results for "{query}"</h1>
         <div className="flex flex-col lg:flex-row gap-8">
@@ -116,7 +117,7 @@ export default function SearchResults() {
         {current && (
           <Transition show={open} as={Fragment}>
             <Dialog onClose={setOpen} className="fixed inset-0 z-50">
-              {/* Backdrop */}
+         
               <Transition.Child as={Fragment} enter="ease-out duration-300" enterFrom="opacity-0" enterTo="opacity-100" leave="ease-in duration-200" leaveFrom="opacity-100" leaveTo="opacity-0">
                 <div className="fixed inset-0 bg-black/50" />
               </Transition.Child>

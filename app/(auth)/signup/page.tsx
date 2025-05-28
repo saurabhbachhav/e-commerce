@@ -22,20 +22,6 @@ const SignupPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  // 1. Motion values for parallax tilt
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
-  const rotateX = useTransform(y, [-100, 100], [15, -15]);
-  const rotateY = useTransform(x, [-100, 100], [-15, 15]);
-
-  // 2. Mouse‐move handler to update motion values
-  const handleMouse = (e: React.MouseEvent<HTMLDivElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const offsetX = e.clientX - (rect.left + rect.width / 2);
-    const offsetY = e.clientY - (rect.top + rect.height / 2);
-    x.set(offsetX);
-    y.set(offsetY);
-  };
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -67,8 +53,7 @@ const SignupPage: React.FC = () => {
       if (!res.ok) {
         setError(data.message || "Something went wrong");
       } else {
-        // Redirect to home page or login page after successful signup
-        router.push("/"); // Redirect to the home page
+        router.push("/"); 
       }
     } catch (err) {
       setError("Signup failed. Try again.");
@@ -86,12 +71,10 @@ const SignupPage: React.FC = () => {
         break;
       case "facebook":
         console.log("Sign in with Facebook");
-        // Trigger Facebook OAuth flow
         alert("Working on this! Please login with google");
         break;
       case "instagram":
         console.log("Sign in with Instagram");
-        // Trigger Instagram OAuth flow
         alert("Working on this! Please login with google");
         break;
       default:
@@ -102,14 +85,12 @@ const SignupPage: React.FC = () => {
 
   return (
     <div className="flex flex-col md:flex-row h-screen bg-gradient-to-r from-blue-50 via-white to-blue-100">
-      {/* Left Panel */}
       <motion.div
         initial={{ x: -100, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
         transition={{ duration: 0.8 }}
         className="flex flex-col justify-start items-center md:w-1/3 w-full p-8 bg-gradient-to-b from-gray-100 to-gray-200 space-y-6 relative"
       >
-        {/* Logo */}
         <Link
           href="/"
           className="absolute top-6 left-6 flex items-center space-x-2 cursor-pointer"
@@ -126,8 +107,6 @@ const SignupPage: React.FC = () => {
             </p>
           </div>
         </Link>
-
-        {/* Signup Form */}
         <div className="flex flex-col items-center justify-center w-full h-full space-y-6">
           <h2 className="text-2xl font-semibold text-blue-700">
             Create Account
@@ -180,7 +159,6 @@ const SignupPage: React.FC = () => {
             >
               {loading ? "Signing Up..." : "Sign Up"}
             </button>
-            {/* Login link */}
             <p className="text-center text-sm text-gray-600 mt-2">
               Alredy Have an account?{" "}
               <Link href="/login" className="text-blue-600 hover:underline">
@@ -253,9 +231,6 @@ const SignupPage: React.FC = () => {
           </div>
         </div>
       </motion.div>
-
-      {/* Right Panel with subtle decoration */}
-      {/* Right-hand animation pane */}
       <Animation_Page />
     </div>
   );

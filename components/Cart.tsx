@@ -60,7 +60,6 @@ const Cart: React.FC<CartProps> = ({ userName }) => {
 
   return (
     <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-10 px-6 py-8 transition-colors duration-500">
-      {/* Items */}
       <section className="lg:col-span-2 space-y-6" aria-labelledby="cart-items">
         {cart.length === 0 ? (
           <div className="text-center py-20">
@@ -135,7 +134,6 @@ const Cart: React.FC<CartProps> = ({ userName }) => {
           ))
         )}
 
-        {/* Recommendations */}
         {recommended.length > 0 && (
           <section className="mt-12">
             <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4 transition-colors duration-300">
@@ -177,7 +175,6 @@ const Cart: React.FC<CartProps> = ({ userName }) => {
         )}
       </section>
 
-      {/* Summary */}
       {cart.length > 0 && (
         <aside
           className="bg-white dark:bg-gray-900 p-6 rounded-xl shadow-xl dark:shadow-black/60 space-y-5 sticky top-24 h-fit transition-colors duration-500"

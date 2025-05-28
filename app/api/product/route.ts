@@ -1,12 +1,12 @@
-// app/api/products/route.ts
+
 
 import { NextRequest, NextResponse } from "next/server";
 import Product from "../../../(backend)/db/models/product.model"; // ✅ Use alias for clarity
 import connection from "../../../(backend)/db/database_connection/mongodb_collections";
 
-// 🛡️ Replace with your real admin authentication logic
+
 async function isAdmin(req: NextRequest): Promise<boolean> {
-  // Example: const token = req.headers.get("Authorization");
+ 
   return true;
 }
 
@@ -31,7 +31,6 @@ export async function POST(req: NextRequest) {
   try {
     const data = await req.json();
 
-    // Optional: Add basic validation
     if (
       !data.name ||
       !data.price ||

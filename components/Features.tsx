@@ -10,7 +10,7 @@ export default function Features() {
           Why Shop with Spargen?
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
-          {/* Feature 1 */}
+       
           <div className="flex flex-col items-center gap-4 px-4">
             <FaShippingFast className="text-pink-500 dark:text-pink-400 text-5xl" />
             <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
@@ -22,7 +22,7 @@ export default function Features() {
             </p>
           </div>
 
-          {/* Feature 2 */}
+      
           <div className="flex flex-col items-center gap-4 px-4">
             <FaTags className="text-pink-500 dark:text-pink-400 text-5xl" />
             <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
@@ -33,7 +33,7 @@ export default function Features() {
             </p>
           </div>
 
-          {/* Feature 3 */}
+    
           <div className="flex flex-col items-center gap-4 px-4">
             <FaHeadset className="text-pink-500 dark:text-pink-400 text-5xl" />
             <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
@@ -45,7 +45,7 @@ export default function Features() {
             </p>
           </div>
 
-          {/* Feature 4 */}
+      
           <div className="flex flex-col items-center gap-4 px-4">
             <FaLock className="text-pink-500 dark:text-pink-400 text-5xl" />
             <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">

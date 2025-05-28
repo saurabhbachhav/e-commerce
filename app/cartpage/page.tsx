@@ -41,7 +41,6 @@ export default function CartPage() {
           : "bg-gradient-to-b from-indigo-50 to-white text-gray-900"
       }`}
     >
-      {/* Hero Header */}
       <motion.header
         className="py-20 px-6 text-center bg-gradient-to-r from-indigo-700 to-purple-700 shadow-md"
         variants={fadeInUp}
@@ -56,7 +55,6 @@ export default function CartPage() {
         </p>
       </motion.header>
 
-      {/* Cart Content */}
       <motion.section
         className="container mx-auto px-4 sm:px-6 lg:px-8 py-12"
         variants={fadeInUp}
@@ -69,7 +67,7 @@ export default function CartPage() {
         </AnimatePresence>
       </motion.section>
 
-      {/* Call to Action */}
+
       <motion.section
         className="w-full bg-indigo-100 dark:bg-indigo-950 py-12 text-center transition duration-300"
         variants={fadeInUp}
@@ -95,7 +93,6 @@ export default function CartPage() {
         </button>
       </motion.section>
 
-      {/* Recommendations */}
       <motion.section
         id="product-gallery"
         className="container mx-auto px-4 sm:px-6 lg:px-8 py-16"

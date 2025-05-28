@@ -13,7 +13,6 @@ export default function EnhancedLandingSection() {
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
   const [showStars, setShowStars] = useState(false);
 
-  // 1) Rotate headline words
   useEffect(() => {
     const id = setInterval(
       () => setCurrentWordIndex(i => (i + 1) % rotatingWords.length),
@@ -22,18 +21,18 @@ export default function EnhancedLandingSection() {
     return () => clearInterval(id);
   }, []);
 
-  // 2) Show stars once “Spargen” letters finish popping
+
   useEffect(() => {
     const delay = "Spargen".length * 0.1 * 1000 + 1500;
     const timer = setTimeout(() => setShowStars(true), delay);
     return () => clearTimeout(timer);
   }, []);
 
-  // 3) Safe dims
+ 
   const winW = typeof window !== "undefined" ? window.innerWidth : 0;
   const winH = typeof window !== "undefined" ? window.innerHeight : 0;
 
-  // 4) Blob motion values (hard-coded six times)
+ 
   const b1x = useMotionValue(Math.random() * winW),
         b1y = useMotionValue(Math.random() * winH),
         b1s = useMotionValue(1);
@@ -46,7 +45,7 @@ export default function EnhancedLandingSection() {
         b3y = useMotionValue(Math.random() * winH),
         b3s = useMotionValue(1);
 
-  // 5) Animate all six at lightning speed
+
   useEffect(() => {
     const animateBlob = (x, y, s) => {
       const loop = () => {
@@ -64,7 +63,7 @@ export default function EnhancedLandingSection() {
     ].forEach(([x,y,s]) => animateBlob(x,y,s));
   }, [winW, winH, b1x,b1y,b1s, b2x,b2y,b2s, b3x,b3y,b3s]);
 
-  // 6) Company name + stars
+
   const company = "Spargen";
   const letters = company.split("");
   const starPositions = [
@@ -74,7 +73,7 @@ export default function EnhancedLandingSection() {
     { x: 80,  y: 70, d: 600 },
   ];
 
-  // 7) Blob configs (sizes/colors)
+  
   const blobs = [
     { x: b1x, y: b1y, s: b1s, size:  Math.random()*200+200, color:"bg-[#FF6F61]",  opacity:0.6, blur:"blur-2xl" },
     { x: b2x, y: b2y, s: b2s, size:  Math.random()*200+200, color:"bg-[#5D8BF4]",  opacity:0.5, blur:"blur-xl"  },
@@ -84,7 +83,6 @@ export default function EnhancedLandingSection() {
   return (
     <div className="w-full h-screen relative overflow-hidden flex flex-col items-center justify-center
                     bg-gradient-to-br from-[#F7F7F7] via-[#E6F0FF] to-[#F7F7F7] px-6">
-      {/* Fast, full-coverage blobs */}
       <div className="pointer-events-none absolute inset-0">
         {blobs.map((b, i) => (
           <motion.div
@@ -102,7 +100,6 @@ export default function EnhancedLandingSection() {
         ))}
       </div>
 
-      {/* “Spargen” + twinkling stars */}
       <div className="relative z-10 flex items-center justify-center mb-6">
         {letters.map((char, idx) => (
           <motion.span
@@ -133,7 +130,6 @@ export default function EnhancedLandingSection() {
         ))}
       </div>
 
-      {/* Rotating headline */}
       <motion.h2
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: [0,-8,0] }}
@@ -144,7 +140,7 @@ export default function EnhancedLandingSection() {
         {`Unwrap ${rotatingWords[currentWordIndex]}`}
       </motion.h2>
 
-      {/* Subheading & features */}
+
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: [0.6,1,0.6] }}
