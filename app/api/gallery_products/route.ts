@@ -1,15 +1,18 @@
 import { MongoClient, MongoClientOptions } from "mongodb";
 
 const uri = process.env.MONGODB_URI!;
-const options: MongoClientOptions = {}; 
+const options: MongoClientOptions = {};
 
 let client: MongoClient;
 let clientPromise: Promise<MongoClient>;
 
-
+// Extend NodeJS.Global to include `_mongoClientPromise`
 declare global {
-
-  var _mongoClientPromise: Promise<MongoClient> | undefined;
+  namespace NodeJS {
+    interface Global {
+      _mongoClientPromise?: Promise<MongoClient>;
+    }
+  }
 }
 
 if (!uri) {
@@ -17,21 +20,21 @@ if (!uri) {
 }
 
 if (process.env.NODE_ENV === "development") {
-
-  if (!global._mongoClientPromise) {
+  // Use a type assertion to access `_mongoClientPromise`
+  const globalNode = global as NodeJS.Global;
+  if (!globalNode._mongoClientPromise) {
     client = new MongoClient(uri, options);
-    global._mongoClientPromise = client.connect();
+    globalNode._mongoClientPromise = client.connect();
   }
-  clientPromise = global._mongoClientPromise;
+  clientPromise = globalNode._mongoClientPromise;
 } else {
-
+  // For production, create a new client without storing it globally
   client = new MongoClient(uri, options);
   clientPromise = client.connect();
 }
 
 export async function GET() {
   try {
- 
     const client = await clientPromise;
     const db = client.db("e-commerce");
     const collection = db.collection("product");
@@ -41,9 +44,10 @@ export async function GET() {
     return new Response(JSON.stringify(products), {
       headers: { "Content-Type": "application/json" },
     });
-  } catch (error: any) {
+  } catch (error) {
+    const err = error as { message?: string };
     return new Response(
-      JSON.stringify({ error: error.message || "Internal Server Error" }),
+      JSON.stringify({ error: err.message || "Internal Server Error" }),
       {
         status: 500,
         headers: { "Content-Type": "application/json" },

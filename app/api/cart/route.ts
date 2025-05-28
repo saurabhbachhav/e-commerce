@@ -4,6 +4,16 @@ import Cart from "../../../(backend)/db/models/cart.model";
 import Product from "../../../(backend)/db/models/product.model";
 import connection from "../../../(backend)/db/database_connection/mongodb_collections";
 
+interface CartItem {
+  productId: string;
+  quantity: number;
+}
+
+interface EnrichedItem {
+  product: any; // Replace `any` with the specific product type if available
+  quantity: number;
+}
+
 export async function GET(req: NextRequest) {
   try {
     await connection;
@@ -19,10 +29,10 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ userId, items: [] });
     }
 
-    const productIds = cart.items.map((item: any) => item.productId);
+    const productIds = cart.items.map((item: CartItem) => item.productId);
     const products = await Product.find({ _id: { $in: productIds } });
 
-    const enrichedItems = cart.items.map((item: any) => {
+    const enrichedItems: EnrichedItem[] = cart.items.map((item: CartItem) => {
       const product = products.find(
         (p) => p._id.toString() === item.productId.toString()
       );
@@ -42,17 +52,17 @@ export async function GET(req: NextRequest) {
   }
 }
 
-
 export async function POST(req: NextRequest) {
   try {
     await connection;
-    const { userId, item } = await req.json();
+    const { userId, item }: { userId: string; item: CartItem } =
+      await req.json();
 
-    if (!userId || !item?.product?._id) {
+    if (!userId || !item?.productId) {
       return NextResponse.json({ error: "Invalid payload" }, { status: 400 });
     }
 
-    const productId = item.product._id;
+    const productId = item.productId;
     const quantity = item.quantity;
 
     let cart = await Cart.findOne({ userId });
@@ -62,14 +72,14 @@ export async function POST(req: NextRequest) {
     }
 
     const existingItem = cart.items.find(
-      (i: any) => i.productId.toString() === productId
+      (i: CartItem) => i.productId.toString() === productId
     );
 
     if (existingItem) {
       existingItem.quantity += quantity;
       if (existingItem.quantity <= 0) {
         cart.items = cart.items.filter(
-          (i: any) => i.productId.toString() !== productId
+          (i: CartItem) => i.productId.toString() !== productId
         );
       }
     } else {
@@ -92,7 +102,8 @@ export async function POST(req: NextRequest) {
 export async function PATCH(req: NextRequest) {
   try {
     await connection;
-    const { userId, productId } = await req.json();
+    const { userId, productId }: { userId: string; productId: string } =
+      await req.json();
 
     if (!userId || !productId) {
       return NextResponse.json(
@@ -108,7 +119,7 @@ export async function PATCH(req: NextRequest) {
     }
 
     cart.items = cart.items.filter(
-      (item: any) => item.productId.toString() !== productId
+      (item: CartItem) => item.productId.toString() !== productId
     );
 
     await cart.save();
@@ -126,7 +137,7 @@ export async function PATCH(req: NextRequest) {
 export async function DELETE(req: NextRequest) {
   try {
     await connection;
-    const { userId } = await req.json();
+    const { userId }: { userId: string } = await req.json();
 
     if (!userId) {
       return NextResponse.json({ error: "Missing userId" }, { status: 400 });

@@ -12,23 +12,24 @@ import Footer from "@/components/Footer";
 import ProductGallery from "@/components/ProductGallery";
 import { useScroll } from "../context/ScrollContext";
 
+interface User {
+  id: string;
+  name: string;
+  email: string;
+}
+
 export default function HomePage() {
   const { data: session, status } = useSession();
   const { login, user } = useAuth();
   const galleryRef = useRef<HTMLDivElement>(null);
   const { registerGalleryRef } = useScroll();
 
-  
   const stableLogin = useCallback(login, [login]);
 
   useEffect(() => {
-    if (
-      status === "authenticated" &&
-      session?.user?.email &&
-      !user 
-    ) {
-      const userData = {
-        id: (session.user as any)?.id || session.user.email,
+    if (status === "authenticated" && session?.user?.email && !user) {
+      const userData: User = {
+        id: session.user.id || session.user.email,
         name: session.user.name || "",
         email: session.user.email,
       };

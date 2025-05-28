@@ -3,11 +3,19 @@ import { NextResponse } from "next/server";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
+// Define a type for items
+interface Item {
+  id: string;
+  name: string;
+  price: number;
+  quantity: number;
+}
+
 export async function POST(req: Request) {
   const body = await req.json();
-  const { items, email } = body;
+  const { items, email }: { items: Item[]; email: string } = body;
 
-  const lineItems = items.map((item: any) => ({
+  const lineItems = items.map((item: Item) => ({
     price_data: {
       currency: "inr",
       product_data: {

@@ -1,115 +1,63 @@
+import { MongoClient, MongoClientOptions } from "mongodb";
 
+// Fetch MongoDB URI from environment variables
+const uri = process.env.MONGODB_URI!;
+const options: MongoClientOptions = {};
 
-import { NextRequest, NextResponse } from "next/server";
-import Product from "../../../(backend)/db/models/product.model"; // ✅ Use alias for clarity
-import connection from "../../../(backend)/db/database_connection/mongodb_collections";
+let client: MongoClient;
+let clientPromise: Promise<MongoClient>;
 
-
-async function isAdmin(req: NextRequest): Promise<boolean> {
- 
-  return true;
-}
-
-export async function GET(req: NextRequest) {
-  await connection;
-
-  if (!(await isAdmin(req))) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
-  const products = await Product.find({});
-  return NextResponse.json(products);
-}
-
-export async function POST(req: NextRequest) {
-  await connection;
-
-  if (!(await isAdmin(req))) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
-  try {
-    const data = await req.json();
-
-    if (
-      !data.name ||
-      !data.price ||
-      !data.image ||
-      !data.description ||
-      data.stock == null
-    ) {
-      return NextResponse.json(
-        { error: "Missing required fields" },
-        { status: 400 }
-      );
+// Extend NodeJS.Global to include `_mongoClientPromise`
+declare global {
+  namespace NodeJS {
+    interface Global {
+      _mongoClientPromise?: Promise<MongoClient>;
     }
-
-    const product = new Product(data);
-    await product.save();
-
-    return NextResponse.json(product, { status: 201 });
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
 
-export async function PUT(req: NextRequest) {
-  await connection;
+// Ensure MongoDB URI is defined
+if (!uri) {
+  throw new Error("Please add your MongoDB URI to .env");
+}
 
-  if (!(await isAdmin(req))) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+if (process.env.NODE_ENV === "development") {
+  // Cast `global` to `NodeJS.Global` and handle `_mongoClientPromise`
+  const globalNode = global as NodeJS.Global;
+  if (!globalNode._mongoClientPromise) {
+    client = new MongoClient(uri, options);
+    globalNode._mongoClientPromise = client.connect();
   }
+  clientPromise = globalNode._mongoClientPromise;
+} else {
+  // For production, create a new MongoClient instance
+  client = new MongoClient(uri, options);
+  clientPromise = client.connect();
+}
 
+// GET function to fetch products from the database
+export async function GET() {
   try {
-    const { id, ...updates } = await req.json();
+    const client = await clientPromise;
+    const db = client.db("e-commerce");
+    const collection = db.collection("product");
 
-    if (!id) {
-      return NextResponse.json(
-        { error: "Product ID is required" },
-        { status: 400 }
-      );
-    }
+    // Fetch all products
+    const products = await collection.find({}).toArray();
 
-    const updatedProduct = await Product.findByIdAndUpdate(id, updates, {
-      new: true,
-      runValidators: true,
+    // Return the products as JSON
+    return new Response(JSON.stringify(products), {
+      headers: { "Content-Type": "application/json" },
     });
-
-    if (!updatedProduct) {
-      return NextResponse.json({ error: "Product not found" }, { status: 404 });
-    }
-
-    return NextResponse.json(updatedProduct);
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
-  }
-}
-
-export async function DELETE(req: NextRequest) {
-  await connection;
-
-  if (!(await isAdmin(req))) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
-  try {
-    const { id } = await req.json();
-
-    if (!id) {
-      return NextResponse.json(
-        { error: "Product ID is required" },
-        { status: 400 }
-      );
-    }
-
-    const deletedProduct = await Product.findByIdAndDelete(id);
-
-    if (!deletedProduct) {
-      return NextResponse.json({ error: "Product not found" }, { status: 404 });
-    }
-
-    return NextResponse.json({ message: "Product deleted successfully" });
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  } catch (error) {
+    // Ensure `error` is properly typed
+    const err = error as { message?: string };
+    return new Response(
+      JSON.stringify({ error: err.message || "Internal Server Error" }),
+      {
+        status: 500,
+        headers: { "Content-Type": "application/json" },
+      }
+    );
   }
 }

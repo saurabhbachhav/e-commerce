@@ -1,4 +1,3 @@
-// app/success/page.tsx
 "use client";
 
 import { useEffect } from "react";
@@ -10,8 +9,8 @@ export default function SuccessPage() {
   const { clearCart } = useCart();
 
   useEffect(() => {
-    clearCart;
-  }, []);
+    clearCart(); // Call the function explicitly
+  }, [clearCart]); // Add clearCart to the dependency array
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-4 bg-gradient-to-br from-green-50 to-white dark:from-gray-900 dark:to-gray-800">

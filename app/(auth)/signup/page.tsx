@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { useMotionValue, useTransform, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import { FaGoogle, FaFacebookF, FaInstagram } from "react-icons/fa";
 import Animation_Page from "../../../components/ui/Animation_Page"  
 import { signIn } from "next-auth/react";
@@ -56,6 +56,7 @@ const SignupPage: React.FC = () => {
         router.push("/"); 
       }
     } catch (err) {
+      console.log(err);
       setError("Signup failed. Try again.");
     } finally {
       setLoading(false);

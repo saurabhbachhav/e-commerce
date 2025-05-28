@@ -17,8 +17,10 @@ export default function CheckoutPage() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (status === "unauthenticated") router.push("/login");
-  }, [status]);
+    if (status === "unauthenticated") {
+      router.push("/login");
+    }
+  }, [status, router]); // Added `router` to the dependency array
 
   const handleCheckout = async () => {
     setLoading(true);
