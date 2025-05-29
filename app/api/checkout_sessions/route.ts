@@ -31,8 +31,8 @@ export async function POST(req: Request) {
     payment_method_types: ["card"],
     mode: "payment",
     line_items: lineItems,
-    success_url: `${process.env.NEXT_PUBLIC_APP_URL}/success`,
-    cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/cart`,
+    success_url: `${process.env.NEXTAUTH_URLL}/success`,
+    cancel_url: `${process.env.NEXTAUTH_URLL}/cart`,
     customer_email: email,
   });
 
