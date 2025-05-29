@@ -186,8 +186,8 @@ const Navbar = ({
                 </li>
                 <li>
                   <button
-                    onClick={() => {
-                      logout();
+                    onClick={async () => {
+                     await  logout;
                       signOut({ callbackUrl: "/" });
                     }}
                     className="text-red-500 font-semibold hover:underline py-2"

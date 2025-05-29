@@ -57,7 +57,7 @@ export async function POST(req: NextRequest) {
     await connection;
     const { userId, item }: { userId: string; item: CartItem } =
       await req.json();
-
+     
     if (!userId || !item?.productId) {
       return NextResponse.json({ error: "Invalid payload" }, { status: 400 });
     }

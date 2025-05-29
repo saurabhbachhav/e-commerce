@@ -9,7 +9,11 @@ export default function SuccessPage() {
   const { clearCart } = useCart();
 
   useEffect(() => {
-    clearCart(); // Call the function explicitly
+    try { 
+      clearCart;
+    } catch (err) {
+      console.log(err);
+    } ; // Call the function explicitly
   }, [clearCart]); // Add clearCart to the dependency array
 
   return (

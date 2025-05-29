@@ -64,10 +64,7 @@ export const CartProvider = ({ children }: CartProviderProps) => {
   }: {
     product: Product;
     quantity: number;
-    }) => {
-    
-    console.log(product);
-    
+  }) => {
     if (!user?.id) return;
 
     setCart((prev) => {
@@ -88,13 +85,14 @@ export const CartProvider = ({ children }: CartProviderProps) => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           userId: user.id,
-          item: { product, quantity }, 
+          item: { productId: product._id, quantity }, // Fix: Use product._id as productId
         }),
       });
     } catch (err) {
       console.error("Error syncing cart after add:", err);
     }
   };
+  
 
   const removeFromCart = async (productId: string) => {
     if (!user?.id) return;
