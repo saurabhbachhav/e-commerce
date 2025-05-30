@@ -1,63 +1,49 @@
-import { MongoClient, MongoClientOptions } from "mongodb";
+import dbConnect from "../../../(backend)/db/database_connection/mongodb_collections";
+import Product from "../../../(backend)/db/models/product.model";
+import { NextResponse } from "next/server";
 
-// Fetch MongoDB URI from environment variables
-const uri = process.env.MONGODB_URI!;
-const options: MongoClientOptions = {};
+// Ensure MongoDB connection
+await dbConnect;
 
-let client: MongoClient;
-let clientPromise: Promise<MongoClient>;
-
-// Extend NodeJS.Global to include `_mongoClientPromise`
-declare global {
-  namespace NodeJS {
-    interface Global {
-      _mongoClientPromise?: Promise<MongoClient>;
-    }
-  }
-}
-
-// Ensure MongoDB URI is defined
-if (!uri) {
-  throw new Error("Please add your MongoDB URI to .env");
-}
-
-if (process.env.NODE_ENV === "development") {
-  // Cast `global` to `NodeJS.Global` and handle `_mongoClientPromise`
-  const globalNode = global as NodeJS.Global;
-  if (!globalNode._mongoClientPromise) {
-    client = new MongoClient(uri, options);
-    globalNode._mongoClientPromise = client.connect();
-  }
-  clientPromise = globalNode._mongoClientPromise;
-} else {
-  // For production, create a new MongoClient instance
-  client = new MongoClient(uri, options);
-  clientPromise = client.connect();
-}
-
-// GET function to fetch products from the database
+// GET: Fetch all products
 export async function GET() {
   try {
-    const client = await clientPromise;
-    const db = client.db("e-commerce");
-    const collection = db.collection("product");
+    const products = await Product.find().lean();
+    return NextResponse.json(products, { status: 200 });
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+}
 
-    // Fetch all products
-    const products = await collection.find({}).toArray();
+// POST: Add a new product
+export async function POST(request: Request) {
+  try {
+    const data = await request.json();
+    const newProduct = await Product.create(data);
+    return NextResponse.json(newProduct, { status: 201 });
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message }, { status: 400 });
+  }
+}
 
-    // Return the products as JSON
-    return new Response(JSON.stringify(products), {
-      headers: { "Content-Type": "application/json" },
-    });
-  } catch (error) {
-    // Ensure `error` is properly typed
-    const err = error as { message?: string };
-    return new Response(
-      JSON.stringify({ error: err.message || "Internal Server Error" }),
-      {
-        status: 500,
-        headers: { "Content-Type": "application/json" },
-      }
-    );
+// PUT: Update an existing product
+export async function PUT(request: Request) {
+  try {
+    const { id, ...updates } = await request.json();
+    const updated = await Product.findByIdAndUpdate(id, updates, { new: true });
+    return NextResponse.json(updated, { status: 200 });
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message }, { status: 400 });
+  }
+}
+
+// DELETE: Remove a product
+export async function DELETE(request: Request) {
+  try {
+    const { id } = await request.json();
+    await Product.findByIdAndDelete(id);
+    return NextResponse.json({ message: "Deleted" }, { status: 200 });
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message }, { status: 400 });
   }
 }

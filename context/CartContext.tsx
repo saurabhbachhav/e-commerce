@@ -88,9 +88,12 @@ export const CartProvider = ({ children }: CartProviderProps) => {
           item: { productId: product._id, quantity }, // Fix: Use product._id as productId
         }),
       });
+      alert("Product Added succesfully to Cart");
     } catch (err) {
       console.error("Error syncing cart after add:", err);
     }
+    
+  
   };
   
 
