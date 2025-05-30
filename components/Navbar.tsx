@@ -152,10 +152,10 @@ const Navbar = ({
             </li>
             <li>
               <Link
-                href="/profile"
+                href="/wishlistpage"
                 className="block py-2 hover:text-blue-600 dark:hover:text-pink-400 transition"
               >
-                Profile
+                My Wishlist
               </Link>
             </li>
             {onToggleDarkMode && (
@@ -173,14 +173,6 @@ const Navbar = ({
             )}
             {session?.user ? (
               <>
-                <li>
-                  <Link
-                    href="/startup/create"
-                    className="block py-2 hover:text-blue-600 dark:hover:text-pink-400 transition"
-                  >
-                    Create
-                  </Link>
-                </li>
                 <li className="text-pink-400 font-medium py-2">
                   {session.user.name}
                 </li>
