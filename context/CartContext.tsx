@@ -68,16 +68,21 @@ export const CartProvider = ({ children }: CartProviderProps) => {
     if (!user?.id) return;
 
     setCart((prev) => {
-      const existing = prev.find((item) => item.product._id === product._id);
+      const existing = prev.find(
+        (item) => item.product && item.product._id === product._id
+      );
+
       if (existing) {
         return prev.map((item) =>
-          item.product._id === product._id
+          item.product && item.product._id === product._id
             ? { ...item, quantity: item.quantity + quantity }
             : item
         );
       }
+
       return [...prev, { product, quantity }];
     });
+    
 
     try {
       await fetch("/api/cart", {

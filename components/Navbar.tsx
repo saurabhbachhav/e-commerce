@@ -44,8 +44,16 @@ const Navbar = ({
             </Link>
           </li>
           <li>
+            <Link
+              href="/admin"
+              className="hover:text-blue-600 dark:hover:text-pink-400 transition"
+            >
+              Admin
+            </Link>
+          </li>
+          <li>
             <button
-             onClick={scrollToGallery}
+              onClick={scrollToGallery}
               className="hover:text-blue-600 dark:hover:text-pink-400 transition"
             >
               Categories
@@ -179,7 +187,7 @@ const Navbar = ({
                 <li>
                   <button
                     onClick={async () => {
-                     await  logout;
+                      await logout;
                       signOut({ callbackUrl: "/" });
                     }}
                     className="text-red-500 font-semibold hover:underline py-2"
