@@ -8,28 +8,29 @@ import { useAuth } from "@/context/AuthContext";
 export default function SuccessPage() {
   const router = useRouter();
   const { clearCart } = useCart();
-  const user = useAuth();
+  const { user } = useAuth();
   const [emailStatus, setEmailStatus] = useState("");
   const [isSending, setIsSending] = useState(false);
 
-  const email = localStorage.getItem("user");
-  // 1. Get the item from localStorage
+  let user1: any = null;
 
-  // 2. Parse the JSON string into an object
-  const user1 = JSON.parse(email);
-
-  // 3. Now access the properties
-  // console.log(user1.email); // should print "saurabhbachhav2@gmail.com"
+  // ✅ Safely read from localStorage and parse only if it exists
+  if (typeof window !== "undefined") {
+    const email = localStorage.getItem("user");
+    if (email) {
+      user1 = JSON.parse(email);
+    } else {
+      console.warn("No user found in localStorage.");
+    }
+  }
 
   useEffect(() => {
-    // Clear cart
     try {
       clearCart();
     } catch (err) {
       console.error("Error clearing cart:", err);
     }
 
-    // Send email
     const sendEmail = async () => {
       setIsSending(true);
       try {
@@ -37,10 +38,10 @@ export default function SuccessPage() {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            email: user1 || "fallback@example.com", // Use dynamic email
+            email: user1?.email || "fallback@example.com",
             subject: "Order Confirmation",
             message:
-              "Your order has been confirmed. Thank you for shopping with Spargen A E-commerec WebApp By Saurabh!",
+              "Your order has been confirmed. Thank you for shopping with Spargen, a E-commerce WebApp by Saurabh!",
           }),
         });
 
@@ -58,7 +59,7 @@ export default function SuccessPage() {
     };
 
     sendEmail();
-  }, []);
+  }, [clearCart]);
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-4 bg-gradient-to-br from-green-50 to-white dark:from-gray-900 dark:to-gray-800">
